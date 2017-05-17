@@ -33,26 +33,28 @@ void temphum_presentation(){
 }
 
 void temphum_report(){
-    #ifdef DEBUG
+    #ifdef MY_DEBUG
       Serial.println("Temp/Hum read");
     #endif
 
   // Get temperature from DHT
   float temperature = dht.getTemperature();
   if (isnan(temperature)) {
-    Serial.println("Failed reading temperature from DHT!");
+    #ifdef MY_DEBUG
+      Serial.println("Failed reading temperature from DHT!");
+    #endif
   }
   else{
-    if (!metric) {
-      temperature = dht.toFahrenheit(temperature);
-    }
+    temperature = dht.toFahrenheit(temperature);
     temperature += DHT_TEMP_OFFSET;
     send(msgTemp.set(temperature, 1));
   }
   // Get humidity from DHT library
   float humidity = dht.getHumidity();
   if (isnan(humidity)) {
-    Serial.println("Failed reading humidity from DHT");
+    #ifdef MY_DEBUG
+      Serial.println("Failed reading humidity from DHT");
+    #endif
   }
   else{
     send(msgHum.set(humidity, 1));

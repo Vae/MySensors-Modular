@@ -1,4 +1,4 @@
-// #define MY_DEBUG
+ #define MY_DEBUG
 
 // #define ACT_AS_GATEWAY
 
@@ -9,13 +9,13 @@
 //Basement: 0
 //Main: 1
 //Bedroom: 2
-//Test: 4
-#define MY_NODE_ID 1
+//Test: 99
+#define MY_NODE_ID 99
 
 #ifdef ACT_AS_GATEWAY
   // Set LOW transmit power level as default, if you have an amplified NRF-module and
   // power your radio separately with a good regulator you can turn up PA level.
-  #define MY_RF24_PA_LEVEL RF24_PA_LOW
+  #define MY_RF24_PA_LEVEL RF24_PA_HIGH
   
   // Enable serial gateway
   #define MY_GATEWAY_SERIAL
@@ -83,12 +83,14 @@ bool metric = false;
 #include "common.h"
 #include <MySensors.h>
 #include <TaskScheduler.h>
-#include "motionSensor.h"
-#include "RadioBridge.h"
+//#include "motionSensor.h"
+//#include "RadioBridge.h"
 //#include "temphumSensor.h"
-#include "bme280Sensor.h"
+//#include "bme280Sensor.h"
 //#include "lightSensor.h"
-#include "irBlaster.h"
+//#include "irBlaster.h"
+//#include "customSensor.h"
+#include "RGBAnalog.h"
 
 
 // ---------------------- Scheduler
@@ -149,7 +151,7 @@ void presentation()
 {
     // Send the sketch version information to the gateway and Controller
     sendSketchInfo(DEVICE_TYPE, DEVICE_VERSION);
-    metric = getControllerConfig().isMetric;
+    //metric = getControllerConfig().isMetric;
 
   #ifdef SENSOR_MOTION
     motion_presentation();
@@ -228,5 +230,9 @@ void receive(const MyMessage &message){
 
   #ifdef SENSOR_IRBLASTER
     irBlaster_receive(message);
+  #endif
+
+  #ifdef RGBANALOG
+    RGBAnalog_receive(message);
   #endif
 }

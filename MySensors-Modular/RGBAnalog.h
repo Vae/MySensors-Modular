@@ -1,8 +1,12 @@
-#define SENSOR_TEST
+#define RGBANALOG
+
+// Known issues:
+//  * Hass doesn't seem to line up the GUI with the sensor capabilities. Turning off the main switch disables the RGB component.
+//
+
 
 #define SENSOR_TEST_MAX_VALUE 1200
 
-int sensor_test_value = 0;
 #define CHILD_ID_SENSORTEST 0
 #define CHILD_ID_SENSORTEST1 1
 #define CHILD_ID_SENSORTEST2 2
@@ -13,9 +17,9 @@ MyMessage msgStatus(CHILD_ID_SENSORTEST2, V_STATUS);
 
 uint8_t r = 0, g = 0, b = 0;
 
-bool sensorTest_init[] = {false, false, false};
+bool RGBAnalog_init[] = {false, false, false};
 
-void testSensor_presentation(){
+void RGBAnalog_presentation(){
   #ifdef MY_DEBUG
     Serial.println("##### PRESENTATION # SENSOR TEST #####");
   #endif
@@ -26,7 +30,7 @@ void testSensor_presentation(){
 
 
 
-void testSensor_setup(){
+void RGBAnalog_setup(){
   #ifdef MY_DEBUG
     Serial.println("##### SETUP # SENSOR TEST #####");
   #endif
@@ -43,28 +47,28 @@ void testSensor_setup(){
   
   //request(msgRGB.sensor, V_RGB);
   wait(500);
-  if(!sensorTest_init[msgRGB.sensor])
+  if(!RGBAnalog_init[msgRGB.sensor])
     send(msgRGB.set("ff0000ff"));
     
 //  request(msgDimmer.sensor, V_DIMMER);
 //  wait(500);
-//  if(!sensorTest_init[msgDimmer.sensor])
+//  if(!RGBAnalog_init[msgDimmer.sensor])
     send(msgDimmer.set(0));
     
 //  request(msgStatus.sensor, V_STATUS);
 //  wait(500);
-//  if(!sensorTest_init[msgStatus.sensor])
+//  if(!RGBAnalog_init[msgStatus.sensor])
     send(msgStatus.set(0));
 }
 
-void testSensor_check(){
+void RGBAnalog_check(){
   /*sensor_test_value = sensor_test_value + 1;
   if(sensor_test_value >= SENSOR_TEST_MAX_VALUE)
     sensor_test_value = 0;
   send(msgLightAnalog.set(sensor_test_value));*/
 }
 
-void testSensor_receive(const MyMessage &message){
+void RGBAnalog_receive(const MyMessage &message){
 
   // DEBUG
   Serial.print("Got a message - ");
@@ -81,7 +85,7 @@ void testSensor_receive(const MyMessage &message){
     Serial.println("Got ack from gateway");
     
   } else if (message.type == V_DIMMER) {
-    sensorTest_init[message.sensor] = true;
+    RGBAnalog_init[message.sensor] = true;
   
     Serial.println("Dimming to ");
     Serial.println(message.getInt());
@@ -90,7 +94,7 @@ void testSensor_receive(const MyMessage &message){
     // Do dimmer stuff here
       
   } else if (message.type == V_STATUS) {
-    sensorTest_init[message.sensor] = true;
+    RGBAnalog_init[message.sensor] = true;
     Serial.print("Turning light ");
     Serial.println(message.getInt());
     send(msgStatus.set(message.getInt()));
@@ -98,7 +102,7 @@ void testSensor_receive(const MyMessage &message){
     // Do On/Off stuff here
 
   } else if (message.type == V_RGBW) {
-    sensorTest_init[message.sensor] = true;
+    RGBAnalog_init[message.sensor] = true;
     send(msgRGB.set(message.getString()));
     long number;
     //Grab the White value:
