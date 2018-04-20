@@ -29,12 +29,12 @@ IRsend irSend;
 bool irSend_init = false;
 uint32_t irIndex = CHILD_ID_IRBLASTER_STARTINDEX;
 IRCode irCodes[] = {
-      { MyMessage(irIndex++, V_STATUS), { NEC, 0xFD48B7,   32, 0 }}, // Power
-      { MyMessage(irIndex++, V_STATUS), { NEC, 0xFD58A7,   32, 0 }}, // Vol Up
-      { MyMessage(irIndex++, V_STATUS), { NEC, 0xFD7887,   32, 0 }}, // Vol Down
-      { MyMessage(irIndex++, V_STATUS), { NEC, 0xFD08F7,   32, 0 }}, // Mute
-      { MyMessage(irIndex++, V_STATUS), { NEC, 0xFDA857,   32, 0 }}, // Sleep
-      { MyMessage(irIndex++, V_STATUS), { NEC, 0xFDF00F,   32, 0 }}  // Input
+      { MyMessage(irIndex++, V_STATUS), { NEC, 0x2FD48B7,   32, 0 }}, // Power
+      { MyMessage(irIndex++, V_STATUS), { NEC, 0x2FD58A7,   32, 0 }}, // Vol Up
+      { MyMessage(irIndex++, V_STATUS), { NEC, 0x2FD7887,   32, 0 }}, // Vol Down
+      { MyMessage(irIndex++, V_STATUS), { NEC, 0x2FD08F7,   32, 0 }}, // Mute
+      { MyMessage(irIndex++, V_STATUS), { NEC, 0x2FDA857,   32, 0 }}, // Sleep
+      { MyMessage(irIndex++, V_STATUS), { NEC, 0x2FDF00F,   32, 0 }}  // Input
   };
 
 void irBlaster_presentation(){
@@ -51,19 +51,24 @@ void irBlaster_setup(){
 }
 
 void irBlaster_send(Code &dis){
-  //#ifdef MY_DEBUG
+  #ifdef MY_DEBUG
     Serial.print("Blast: ");
     Serial.println(dis.value);
     if(!irSend_init)
       Serial.println("irSend not init!");
-  //#endif
-  if(irSend_init)
-    irSend.sendNEC(dis.value, dis.len);
+  #endif
+  if(irSend_init){
+//    for(int a = 0; a < 3; a++){
+      irSend.sendNEC(dis.value, dis.len);
+//      wait(40);
+//    }
+  }
 }
 
 void irBlaster_receive(const MyMessage &message){
   //Check for V_PERCENTAGE as well: something odd about HA
   if(message.type == V_STATUS || message.type == V_PERCENTAGE){
+    
     if(message.sensor - IRBLASTER_OFFSET >= ARRAY_SIZE(irCodes) || message.sensor - IRBLASTER_OFFSET < 0){
       #ifdef MY_DEBUG
         Serial.print("Invalid code: ");

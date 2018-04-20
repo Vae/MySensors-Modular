@@ -67,7 +67,7 @@ void radioBridge_presentation(){
 }
 
 void sendPulse(uint32_t p){
-  wait(100);
+  //wait(100);
   #ifdef MY_DEBUG
     Serial.print("Pulse: ");
     Serial.println(p);
@@ -76,11 +76,15 @@ void sendPulse(uint32_t p){
   #endif
   if(mySwitch_init)
     mySwitch.send(p, 24);
-  wait(100);
+  //wait(100);
 }
 
 void radioBridge_receive(const MyMessage &message){
     //Check for V_PERCENTAGE as well: something odd about HA
+    #ifdef MY_DEBUG
+      Serial.print("message.type: ");
+      Serial.println(message.type);
+    #endif
     if(message.type == V_STATUS || message.type == V_PERCENTAGE){
       //send( switches[a].msg.set(0) );
       if(message.sensor - SWITCHES_OFFSET >= ARRAY_SIZE(switches) || message.sensor - SWITCHES_OFFSET < 0){
@@ -91,6 +95,7 @@ void radioBridge_receive(const MyMessage &message){
         return;
       }
       int state = message.getInt();
+      
       if(state)
         sendPulse(switches[message.sensor - SWITCHES_OFFSET].pulseOn);
       else
@@ -102,5 +107,6 @@ void radioBridge_receive(const MyMessage &message){
         Serial.println(message.sensor - SWITCHES_OFFSET);
       #endif
       send( switches[message.sensor - SWITCHES_OFFSET].msg.set(state) );
+      wait(100);
     }
 }
